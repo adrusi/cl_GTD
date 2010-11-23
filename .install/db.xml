@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gtd>
+	<tasks>
+		<task id="0">
+			<title>Sample Task</title>
+			<due>99990101</due>
+			<tags>tags, go, here, and can, be multiple words</tags>
+			<description>This is a sample task, edit or delete it to get started.</description>
+		</task>
+	</tasks>
+</gtd>

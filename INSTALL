@@ -1,0 +1,97 @@
+#!/usr/bin/php
+<?php
+
+function readln() {
+	system("stty sane");
+	return trim(fgets(STDIN));
+}
+
+function readc($chars = 1) {
+	system("stty -icanon");
+	return trim(fread(STDIN, $chars));
+	system("stty sane");
+	echo "\010";
+}
+
+$HOME = trim(`echo \$HOME`);
+$users = "";
+
+while ($users == "") {
+	echo "Install for all users or just current?\n";
+	echo "\033[1m1:\033[0m All users\n";
+	echo "\033[1m2:\033[0m Just current user\n";
+	$input = readc();
+	if ($input == "1") {
+		$users = "all";
+		echo "Will install cl_GTD for all users\n";
+	}
+	elseif ($input == "2") {
+		$users = "current";
+		echo "Will install cl_GTD for current user only\n";
+	}
+	else {
+		echo "That is not a valid option";
+	}
+}
+
+if ($users == "current") {
+	echo "Creating install directory...\n";
+	shell_exec("mkdir $HOME/.cl_GTD");
+	
+	echo "Copying main files:\n";
+	echo "    Copying executable file...\n";
+	$gtd = fopen(".install/gtd.php", "r");
+	$content = fread($gtd, 99999);
+	fclose($gtd);
+	$gtd = fopen("$HOME/.cl_GTD/gtd.php", "w+");
+	fwrite($gtd, $content);
+	fclose($gtd);
+	
+	echo "    Copying main functions file...\n";
+	$class = fopen(".install/class.php", "r");
+	$content = fread($class, 99999);
+	fclose($class);
+	$class = fopen("$HOME/.cl_GTD/class.php", "w+");
+	fwrite($class, $content);
+	fclose($class);
+	
+	echo "    Copying utility functions file...\n";
+	$utils = fopen(".install/utils.php", "r");
+	$content = fread($utils, 99999);
+	fclose($utils);
+	$utils = fopen("$HOME/.cl_GTD/utils.php", "w+");
+	fwrite($utils, $content);
+	fclose($utils);
+	
+	echo "    Copying tasks database...\n";
+	$db = fopen(".install/db.xml", "r");
+	$content = fread($db, 99999);
+	fclose($db);
+	$db = fopen("$HOME/.cl_GTD/db.xml", "r");
+	$current = fread($db, 99999);
+	fclose($db);
+	if ($current == null || $current == "") {
+		$db = fopen("$HOME/.cl_GTD/db.xml", "w+");
+		fwrite($db, $content);
+		fclose($db);
+	}
+	
+	echo "Defining paths...\n";
+	$paths  = "<?php ";
+	$paths .= "define(DATABASE, \"$HOME/.cl_GTD/db.xml\");";
+	$file = fopen("$HOME/.cl_GTD/paths.php", "w+");
+	fwrite($file, $paths);
+	fclose($file);
+	
+	echo "Making files executable...\n";
+	shell_exec("chmod +x $HOME/.cl_GTD/gtd.php");
+	
+	echo "Creating UNIX command...\n\n";
+	$alias = fopen("/usr/bin/gtd", "w+");
+	$content  = "#!/bin/sh\n";
+	$content .= "$HOME/.cl_GTD/gtd.php";
+	fwrite($alias, $content);
+	fclose($alias);
+	
+	echo "Install complete.\n";
+}
