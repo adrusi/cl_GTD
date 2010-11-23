@@ -1,0 +1,1 @@
+<?php define(DATABASE, "db.xml");
