@@ -4,7 +4,7 @@ This is a command line Todo application written in PHP. The root directory conta
 
 The executable file in the Demo directory is "gtd.php". Make it executable and run it and a splash screen should pop up for a second, and be replaced by the following: 
 
-![Homescreen](README images/Homescreen.png)
+![Homescreen](http://www.imgjoe.com/x/homescreen.png)
 
 It is very visually pleasing for a text-based interface. If it looks awful in your terminal, use the terminal theme bundled in the repository.
 
