@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<gtd>
-	<tasks>
-		
-	<task id="0"><title>Sample task</title><due>01012011</due><tags>put, some tags, here</tags><description>This is a basic task.</description></task><task id="1"><title>Task title</title><due>11/25/2010</due><tags>one, of, these, tags, are, shared, with another, task</tags><description>The tag "tags" is shared with the task "Sample Task".</description></task><task id="2"><title>Foo bar</title><due>12/25/2010</due><tags>lorem, ipsum, dolor</tags><description>sit amet consequiteur</description></task></tasks>
-</gtd>
