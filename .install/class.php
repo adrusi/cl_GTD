@@ -15,28 +15,7 @@ class GTD {
 		// set tasks
 		$this->tasks = $this->db->tasks->task;
 		$startup = $this->db->prefs->startup;
-		$startup = preg_split("/\|/", preg_replace("/^(.)(.?+)/", "$1|$2", $startup));
-		if ($startup[0] == "a") {
-			$this->show_all();
-		}
-		elseif ($startup[0] == "o") {
-			$this->tags_or($startup[1]);
-		}
-		elseif ($startup[0] == "&") {
-			$this->tags_and($startup[1]);
-		}
-		elseif ($startup[0] == "d") {
-			$this->by_date($startup[1]);
-		}
-		elseif ($startup[0] == "t") {
-			$this->by_title($startup[1]);
-		}
-		elseif ($startup[0] == "s") {
-			$this->select($startup[1]);
-		}
-		
-		// Show all tasks
-		#print_tasks($this->tasks);
+		$this->bookmarks($startup);
 	}
 	
 	public function main() {
@@ -75,6 +54,9 @@ class GTD {
 		}
 		elseif ($char == "p") {
 			$this->preferences();
+		}
+		elseif ($char =="b") {
+			$this->bookmarks();
 		}
 	}
 	
@@ -303,18 +285,116 @@ class GTD {
 	private function preferences() {
 		system("clear");
 		writeln("Select a preference to edit");
-		writeln("\033[1m1)\033[22m Startup");
+		writeln("\033[1m1)\033[0m Startup");
 		$choice = get_char();
 		if ($choice == "1") {
 			system("clear");
 			$current = $this->db->prefs->startup;
-			writeln("\033[1mCurrent startup command: $current");
+			writeln("\033[1mCurrent startup command: $current\033[0m");
 			echo "New startup command: ";
 			$input = read();
 			$this->db->prefs->startup = $input;
 			$xml = fopen(DATABASE, "w+");
 			fwrite($xml, $this->db->asXML());
 			fclose($xml);
+		}
+	}
+	
+	private function bookmarks($q = null) {
+		if ($q == null) {
+			system("clear");
+			writeln("Select a bookmark");
+			$bookmarks = $this->db->bookmarks->bookmark;
+			$id = 1;
+			if (is_string($bookmarks)) {
+				$bookmarks = array($bookmarks);
+			}
+			foreach ($bookmarks as $bookmark) {
+				echo "\033[1m$id) \033[0m";
+				echo $bookmark["name"] . "\n";
+				$id++;
+			}
+			writeln("\033[1mN) \033[0mNew bookmark");
+			writeln("\033[1m-) \033[0mDelete Bookmark");
+			echo "Item ID: ";
+			$input = read();
+			if (preg_match("/[0-9]+/", $input)) {
+				$bookmark = $bookmarks[(int)$input - 1];
+				$commands = preg_split("/\;/", $bookmark);
+				foreach ($commands as $command) {
+					$function = preg_replace("/^(.).+$/", "$1", $command);
+					$parameter = preg_replace("/^.(.+)$/", "$1", $command);
+					$this->tasks = $this->db->tasks->task;
+					if ($function == "a") {
+						$this->show_all();
+					}
+					elseif ($function == "o") {
+						$this->tags_or($parameter);
+					}
+					elseif ($function == "&") {
+						$this->tags_and($parameter);
+					}
+					elseif ($function == "d") {
+						$this->by_date($parameter);
+					}
+					elseif ($function == "t") {
+						$this->by_title($parameter);
+					}
+					elseif ($function == "s") {
+						$this->select($parameter);
+					}
+				}
+			}
+			elseif ($input == "n") {
+				echo "\033[1mBookmark name: \033[0m";
+				$name = read();
+				system("clear");
+				writeln("\033[1;32m$name\033[0m");
+				echo "\033[1mBookmark command: \033[0m";
+				$command = read();
+				$this->db->bookmarks->addChild("bookmark", $command)->addAttribute("name", $name);
+				$xml = fopen(DATABASE, "w+");
+				fwrite($xml, $this->db->asXML());
+				fclose($xml);
+				system("clear");
+			}
+			elseif ($input == "-") {
+				echo "Select bookmark to delete: ";
+				$deletee = read();
+				if (!is_string($this->db->bookmarks->bookmark)) {
+					unset($this->db->bookmarks->bookmark[$deletee - 1]);
+				}
+				else {
+					unset($this->db->bookmarks->bookmark);
+				}
+			}
+		}
+		else {
+			$bookmark = $q;
+			$commands = preg_split("/\;/", $bookmark);
+			foreach ($commands as $command) {
+				$function = preg_replace("/^(.).+$/", "$1", $command);
+				$parameter = preg_replace("/^.(.+)$/", "$1", $command);
+				$this->tasks = $this->db->tasks->task;
+				if ($function == "a") {
+					$this->show_all();
+				}
+				elseif ($function == "o") {
+					$this->tags_or($parameter);
+				}
+				elseif ($function == "&") {
+					$this->tags_and($parameter);
+				}
+				elseif ($function == "d") {
+					$this->by_date($parameter);
+				}
+				elseif ($function == "t") {
+					$this->by_title($parameter);
+				}
+				elseif ($function == "s") {
+					$this->select($parameter);
+				}
+			}
 		}
 	}
 }
