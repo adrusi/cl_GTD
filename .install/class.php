@@ -316,6 +316,7 @@ class GTD {
 			}
 			writeln("\033[1mN) \033[0mNew bookmark");
 			writeln("\033[1m-) \033[0mDelete Bookmark");
+			writeln("\033[1mC) \033[0mCancel");
 			echo "Item ID: ";
 			$input = read();
 			if (preg_match("/[0-9]+/", $input)) {
@@ -357,6 +358,7 @@ class GTD {
 				fwrite($xml, $this->db->asXML());
 				fclose($xml);
 				system("clear");
+				$this->bookmarks($command);
 			}
 			elseif ($input == "-") {
 				echo "Select bookmark to delete: ";
@@ -367,6 +369,12 @@ class GTD {
 				else {
 					unset($this->db->bookmarks->bookmark);
 				}
+				system("clear");
+				$this->bookmarks();
+			}
+			elseif($input == "c") {
+				system("clear");
+				print_tasks($this->tasks);
 			}
 		}
 		else {
