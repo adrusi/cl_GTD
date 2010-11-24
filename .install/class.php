@@ -245,7 +245,7 @@ class GTD {
 		$task->addAttribute("id", "");
 		$id = 0;
 		foreach ($this->db->tasks->task as $the_task) {
-			$the_task["id"] = $id);
+			$the_task["id"] = $id;
 			$id++;
 		}
 		$xml = fopen(DATABASE, "w+");
