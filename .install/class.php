@@ -242,9 +242,10 @@ class GTD {
 		$task->addChild("due", $new["due"]);
 		$task->addChild("tags", $new["tags"]);
 		$task->addChild("description", $new["description"]);
+		$task->addAttribute("id", "");
 		$id = 0;
 		foreach ($this->db->tasks->task as $the_task) {
-			$the_task->addAttribute("id", $id);
+			$the_task["id"] = $id);
 			$id++;
 		}
 		$xml = fopen(DATABASE, "w+");
