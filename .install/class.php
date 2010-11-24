@@ -125,6 +125,7 @@ class GTD {
 		$tasks = array();
 		$read = ($q == null) ? read() : $q;
 		$input = preg_split("/\|/", preg_replace("/^(.)(.+)$/", "$1|$2", $read));
+		$at = preg_replace("/(@\d+[d,w])/", "" $input[1]);
 		if ($input[0] == "+") {
 			$command = preg_split("/\|/", preg_replace("/^(.)(.+)(.)$/", "$1|$2|$3", $read));
 			if ($command[2] == "d") {
@@ -286,6 +287,7 @@ class GTD {
 		system("clear");
 		writeln("Select a preference to edit");
 		writeln("\033[1m1)\033[0m Startup");
+		writeln("\033[1m2)\033[0m Upgrade database");
 		$choice = get_char();
 		if ($choice == "1") {
 			system("clear");
@@ -297,6 +299,15 @@ class GTD {
 			$xml = fopen(DATABASE, "w+");
 			fwrite($xml, $this->db->asXML());
 			fclose($xml);
+		}
+		elseif ($choice == "2") {
+			writeln("Attempting to non-destructively upgrade the database...");
+			if (!$this->db->prefs) {
+				$this->db->addChild("prefs")->addChild("startup", "a");
+			}
+			if (!$this->db->bookmarks) {
+				$this->db->addChild("bookmarks");
+			}
 		}
 	}
 	

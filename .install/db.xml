@@ -3,9 +3,15 @@
 	<tasks>
 		<task id="0">
 			<title>Sample Task</title>
-			<due>99990101</due>
+			<due>20110101</due>
 			<tags>tags, go, here, and can, be multiple words</tags>
 			<description>This is a sample task, edit or delete it to get started.</description>
 		</task>
 	</tasks>
+	<prefs>
+		<startup>d+1w</startup>
+	</prefs>
+	<bookmarks>
+		<bookmark name="Homweork due soon">d+1w;oschool</bookmark>
+	</bookmarks>
 </gtd>
