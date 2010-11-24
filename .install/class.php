@@ -6,6 +6,7 @@ class GTD {
 	private $options = OPTIONS;
 	private $db = "";
 	private $tasks = array();
+	private $startup = "";
 	
 	function __construct() {
 		// set db
@@ -13,9 +14,29 @@ class GTD {
 		
 		// set tasks
 		$this->tasks = $this->db->tasks->task;
+		$startup = $this->db->prefs->startup;
+		$startup = preg_split("/\|/", preg_replace("/^(.)(.?+)/", "$1|$2", $startup));
+		if ($startup[0] == "a") {
+			$this->show_all();
+		}
+		elseif ($startup[0] == "o") {
+			$this->tags_or($startup[1]);
+		}
+		elseif ($startup[0] == "&") {
+			$this->tags_and($startup[1]);
+		}
+		elseif ($startup[0] == "d") {
+			$this->by_date($startup[1]);
+		}
+		elseif ($startup[0] == "t") {
+			$this->by_title($startup[1]);
+		}
+		elseif ($startup[0] == "s") {
+			$this->select($startup[1]);
+		}
 		
 		// Show all tasks
-		print_tasks($this->tasks);
+		#print_tasks($this->tasks);
 	}
 	
 	public function main() {
@@ -52,6 +73,9 @@ class GTD {
 		elseif ($char == "-") {
 			$this->delete_task();
 		}
+		elseif ($char == "p") {
+			$this->preferences();
+		}
 	}
 	
 	public function close() {
@@ -72,9 +96,9 @@ class GTD {
 		print_tasks($this->tasks);
 	}
 	
-	private function tags_or() {
+	private function tags_or($q = null) {
 		echo "Tags: ";
-		$input = read();
+		$input = ($q == null) ? read() : $q;
 		$tags = preg_split("/\s?+,\s?+/", $input);
 		$tasks = array();
 		foreach ($this->tasks as $task) {
@@ -91,9 +115,9 @@ class GTD {
 		print_tasks($this->tasks);
 	}
 	
-	private function tags_and() {
+	private function tags_and($q = null) {
 		echo "Tags: ";
-		$input = read();
+		$input = ($q == null) ? read() : $q;
 		$tags = preg_split("/\s?+,\s?+/", $input);
 		$tasks = array();
 		foreach ($this->tasks as $task) {
@@ -114,10 +138,10 @@ class GTD {
 		print_tasks($this->tasks);
 	}
 	
-	private function by_date() {
+	private function by_date($q = null) {
 		echo "Date command: ";
 		$tasks = array();
-		$read = read();
+		$read = ($q == null) ? read() : $q;
 		$input = preg_split("/\|/", preg_replace("/^(.)(.+)$/", "$1|$2", $read));
 		if ($input[0] == "+") {
 			$command = preg_split("/\|/", preg_replace("/^(.)(.+)(.)$/", "$1|$2|$3", $read));
@@ -154,9 +178,9 @@ class GTD {
 		print_tasks($this->tasks);
 	}
 	
-	private function by_title() {
+	private function by_title($q = null) {
 		echo "Title: ";
-		$input = read();
+		$input = ($q == null) ? read() : $q;
 		$tasks = array();
 		foreach ($this->tasks as $task) {
 			if ($task->title == $input) {
@@ -168,9 +192,9 @@ class GTD {
 		print_tasks($this->tasks);
 	}
 	
-	private function select() {
+	private function select($q = null) {
 		echo "Select number: ";
-		$input = read();
+		$input = ($q == null) ? read() : $q;
 		$title = $this->tasks[(int)$input - 1];
 		$tasks = array();
 		foreach ($this->tasks as $task) {
@@ -274,6 +298,24 @@ class GTD {
 		$this->db = simplexml_load_file(DATABASE);
 		$this->tasks = $this->db->tasks->task;
 		print_tasks($this->tasks);
+	}
+	
+	private function preferences() {
+		system("clear");
+		writeln("Select a preference to edit");
+		writeln("\033[1m1)\033[22m Startup");
+		$choice = get_char();
+		if ($choice == "1") {
+			system("clear");
+			$current = $this->db->prefs->startup;
+			writeln("\033[1mCurrent startup command: $current");
+			echo "New startup command: ";
+			$input = read();
+			$this->db->prefs->startup = $input;
+			$xml = fopen(DATABASE, "w+");
+			fwrite($xml, $this->db->asXML());
+			fclose($xml);
+		}
 	}
 }
 
