@@ -204,10 +204,8 @@ class GTD {
 			$dates = preg_split("/\s/", $input[1]);
 			$min = date("U", strtotime($dates[0]));
 			$max = date("U", strtotime($dates[1]));
-			echo "min: $min | max: $max\n";
 			foreach ($this->tasks as $task) {
 				$date = date("U", strtotime($task->due));
-				echo "date: $date\n";
 				if ($date >= $min && $date <= $max) {
 					$tasks[] = $task;
 				}
