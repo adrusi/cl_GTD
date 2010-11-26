@@ -124,22 +124,66 @@ class GTD {
 		echo "Date command: ";
 		$tasks = array();
 		$read = ($q == null) ? read() : $q;
+		
+		// replace @ expressions with proper date
+		preg_match_all("/@(\d+[d,w,m,y])/", $read, $at_array);
+		foreach ($at_array[1] as $at) {
+			$unit = preg_replace("/\d+([d,w,m,y])/", "$1", $at);
+			$value = preg_replace("/(\d+)[d,w,m,y]/", "$1", $at);
+			if ($unit == "d") {
+				$date = date("m/d/Y", strtotime("+$value day"));
+			}
+			elseif ($unit == "w") {
+				$date = date("m/d/Y", strtotime("+$value week"));
+			}
+			elseif ($unit == "m") {
+				$date = date("m/d/Y", strtotime("+$value month"));
+			}
+			elseif ($unit == "y") {
+				$date = date("m/d/Y", strtotime("+$value year"));
+			}
+			$read = preg_replace("/@$at/", "$date", $read);
+		}
+		
 		$input = preg_split("/\|/", preg_replace("/^(.)(.+)$/", "$1|$2", $read));
-		$at = preg_replace("/(@\d+[d,w])/", "" $input[1]);
-		if ($input[0] == "+") {
-			$command = preg_split("/\|/", preg_replace("/^(.)(.+)(.)$/", "$1|$2|$3", $read));
-			if ($command[2] == "d") {
-				$denominator = 86400;
-			}
-			elseif ($command[2] == "w") {
-				$denominator = 604800;
-			}
-			// TODO add month and year commands
+		if ($input[0] == "+" && !preg_match("/\d{2}.?\d{2}.?\d{4}/", $input[1])) {
 			foreach ($this->tasks as $task) {
-				$date = preg_split("/\|/", preg_replace("/(\d{4})(\d{2})(\d{2})/", "$1|$2|$3", $task->due));
-				$s_date = floor(date("U", mktime(0, 0, 0, $date[1], $date[2], $date[0]))/$denominator);
-				$s = floor(date("U")/$denominator);
-				if ($s_date <= $s + $command[1]) {
+				$task_date = $task->due;
+				$read = $input[1];
+				$unit = preg_replace("/@?\d+([d,w,m,y])$/", "$1", $read);
+				echo "$unit | ";
+				$value = preg_replace("/@?(\d+)[d,w,m,y]$/", "$1", $read);
+				echo "$value\n";
+				$date = date("U");
+				if ($unit == "d") {
+					$max_date = date("U", strtotime("+$value day"));
+				}
+				elseif ($unit == "w") {
+					$max_date = date("U", strtotime("+$value week"));
+				}
+				elseif ($unit == "m") {
+					$max_date = date("U", strtotime("+$value month"));
+				}
+				elseif ($unit == "y") {
+					$max_date = date("U", strtotime("+$value year"));
+				}
+				
+				if (date("U", strtotime($task_date)) <= $max_date && date("U", strtotime($task_date)) >= $date) {
+					$tasks[] = $task;
+				}
+			}
+		}
+		elseif ($input[0] == "+" && preg_match("/\d{2}.?\d{2}.?\d{4}/", $input[1])) {
+			foreach ($this->tasks as $task) {
+				$task_date = $task->due;
+				$read = $input[1];
+				$unit = preg_replace("/@?\d+([d,w,m,y])$/", "$1", $read);
+				echo "$unit | ";
+				$value = preg_replace("/@?(\d+)[d,w,m,y]$/", "$1", $read);
+				echo "$value\n";
+				$date = date("U");
+				$max_date = date("U", strtotime("$value"));
+				if (date("U", strtotime($task_date)) <= $max_date && date("U", strtotime($task_date)) >= $date) {
 					$tasks[] = $task;
 				}
 			}
