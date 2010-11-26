@@ -202,6 +202,23 @@ class GTD {
 		}
 		elseif ($input[0] == "~") {
 			$dates = preg_split("/\s/", $input[1]);
+			if (preg_match("/\\$\d+[d,w,m,y]/", $dates[1])) {
+				$unit = preg_replace("/^\\$\d+([d,w,m,y])/", "$1", $dates[1]);
+				$value = preg_replace("/^\\$(\d+)[d,w,m,y]/", "$1", $dates[1]);
+				if ($unit == "d") {
+					$date = date("m/d/Y", strtotime("$dates[0]+$value day"));
+				}
+				elseif ($unit == "w") {
+					$date = date("m/d/Y", strtotime("$dates[0]+$value week"));
+				}
+				elseif ($unit == "m") {
+					$date = date("m/d/Y", strtotime("$dates[0]+$value month"));
+				}
+				elseif ($unit == "y") {
+					$date = date("m/d/Y", strtotime("$dates[0]+$value year"));
+				}
+				$dates[1] = $date;
+			}
 			$min = date("U", strtotime($dates[0]));
 			$max = date("U", strtotime($dates[1]));
 			foreach ($this->tasks as $task) {
