@@ -58,6 +58,9 @@ class GTD {
 		elseif ($char =="b") {
 			$this->bookmarks();
 		}
+		elseif ($char =="r") {
+			$this->show_archived();
+		}
 	}
 	
 	public function close() {
@@ -380,6 +383,11 @@ class GTD {
 		echo "Select task to delete: ";
 		$input = read();
 		$target = $this->tasks[$input - 1];
+		$archived = $this->db->archived->addChild("task");
+		$archived->addChild("title", $target->title);
+		$archived->addChild("tags", $target->tags);
+		$archived->addChild("due", $target->due);
+		$archived->addChild("description", $target->description);
 		$doc = new DOMDocument;
 		$doc->loadxml($this->db->asXML());
 		$xpath = new DOMXpath($doc);
@@ -553,6 +561,50 @@ class GTD {
 				}
 			}
 		}
+	}
+	
+	private function show_archived() {
+		system("clear");
+		$backup = $this->tasks;
+		$this->tasks = $this->db->archived->task;
+		print_tasks($this->tasks);
+		writeln("\033[1m1)\033[0m Unarchive");
+		writeln("\033[1m2)\033[0m Clear archived");
+		writeln("\033[1m3)\033[0m Cancel");
+		$choice = strtolower(get_char());
+		if ($choice == "1") {
+			echo "\nChoose task to unarchive: ";
+			$input = read();
+			$new = $this->db->tasks->addChild("task");
+			$old = $this->tasks[$input - 1];
+			$new->addChild("title", $old->title);
+			$new->addChild("tags", $old->tags);
+			$new->addChild("due", $old->due);
+			$new->addChild("description", $old->description);
+			$new->addAttribute("id", "");
+			$id = 0;
+			foreach ($this->db->tasks->task as $the_task) {
+				$new["id"] = $id;
+				$id++;
+			}
+			unset($this->db->archived->task[$input - 1]);
+			$xml = fopen(DATABASE, "w+");
+			fwrite($xml, $this->db->asXML());
+			fclose($xml);
+			$this->tasks = $backup;
+		}
+		elseif ($choice == "2") {
+			unset($this->db->archived->task);
+			$xml = fopen(DATABASE, "w+");
+			fwrite($xml, $this->db->asXML());
+			fclose($xml);
+			$this->tasks = $backup;
+		}
+		elseif ($choice == "3") {
+			$this->tasks = $backup;
+		}
+		system("clear");
+		print_tasks($this->tasks);
 	}
 }
 

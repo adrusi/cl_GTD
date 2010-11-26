@@ -89,4 +89,5 @@ foreach (glob("themes/*.php") as $filename) {
 }
 
 $db = simplexml_load_file(DATABASE);
-$theme = $theme_names[$db->prefs->theme];
+$theme_name = (string)$db->prefs->theme[0];
+$theme = $theme_names[$theme_name];
