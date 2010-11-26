@@ -1,12 +1,14 @@
 #!/usr/bin/php
 <?php
 require_once("paths.php");
+require_once("theme.php");
 require_once("utils.php");
 system("clear");
 echo $colors->getColoredString($logo, "red");
 sleep(1);
 system("clear");
 // Set timezone
+date_default_timezone_set("GMT");
 function getLocalTimezone()
 {
     $iTime = time();

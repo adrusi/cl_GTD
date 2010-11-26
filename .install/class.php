@@ -190,11 +190,10 @@ class GTD {
 		}
 		elseif ($input[0] == "=") {
 			foreach ($this->tasks as $task) {
-				$date = preg_split("/\|/", preg_replace("/(\d{4})(\d{2})(\d{2})/", "$1|$2|$3", $task->due));
-				$i_date = preg_split("/\|/", preg_replace("/(\d{2}).?(\d{2}).?(\d{4})/", "$3|$1|$2", $input[1]));
-				$s_date = date('mdY', mktime(0, 0, 0, $date[1], $date[2], $date[0]));
-				$s = date('mdY', mktime(0, 0, 0, $i_date[1], $i_date[2], $i_date[0]));
-				echo "$s_date $s\n";
+				$date = $task->due;
+				$i_date = $input[1];
+				$s_date = date('mdY', strtotime($date));
+				$s = date('mdY', strtotime($i_date));
 				if ($s == $s_date) {
 					$tasks[] = $task;
 				}
@@ -275,6 +274,27 @@ class GTD {
 		$edit["tags"] = read();
 		echo "Due: ";
 		$edit["due"] = read();
+		if (preg_match("/^@/", $edit["due"])) {
+			preg_match_all("/@(\d+[d,w,m,y])/", $edit["due"], $at_array);
+			foreach ($at_array[1] as $at) {
+				$unit = preg_replace("/\d+([d,w,m,y])/", "$1", $at);
+				$value = preg_replace("/(\d+)[d,w,m,y]/", "$1", $at);
+				if ($unit == "d") {
+					$date = date("m/d/Y", strtotime("+$value day"));
+				}
+				elseif ($unit == "w") {
+					$date = date("m/d/Y", strtotime("+$value week"));
+				}
+				elseif ($unit == "m") {
+					$date = date("m/d/Y", strtotime("+$value month"));
+				}
+				elseif ($unit == "y") {
+					$date = date("m/d/Y", strtotime("+$value year"));
+				}
+				$edit["due"] = preg_replace("/@$at/", "$date", $edit["due"]);
+			}
+		}
+		$edit["due"] = preg_replace("/(\d{2}).?(\d{2}).?(\d{4})/", "$3$1$2", $edit["due"]);
 		echo "Description: ";
 		$edit["description"] = read();
 		foreach ($edit as $prop => $val) {
@@ -314,7 +334,28 @@ class GTD {
 		echo "Tags: ";
 		$new["tags"] = read();
 		echo "Due: ";
-		$new["due"] = preg_replace("/(\d{2}).?(\d{2}).?(\d{4})/", "$3$1$2", read());
+		$new["due"] = read();
+		if (preg_match("/^@/", $new["due"])) {
+			preg_match_all("/@(\d+[d,w,m,y])/", $new["due"], $at_array);
+			foreach ($at_array[1] as $at) {
+				$unit = preg_replace("/\d+([d,w,m,y])/", "$1", $at);
+				$value = preg_replace("/(\d+)[d,w,m,y]/", "$1", $at);
+				if ($unit == "d") {
+					$date = date("m/d/Y", strtotime("+$value day"));
+				}
+				elseif ($unit == "w") {
+					$date = date("m/d/Y", strtotime("+$value week"));
+				}
+				elseif ($unit == "m") {
+					$date = date("m/d/Y", strtotime("+$value month"));
+				}
+				elseif ($unit == "y") {
+					$date = date("m/d/Y", strtotime("+$value year"));
+				}
+				$new["due"] = preg_replace("/@$at/", "$date", $new["due"]);
+			}
+		}
+		$new["due"] = preg_replace("/(\d{2}).?(\d{2}).?(\d{4})/", "$3$1$2", $new["due"]);
 		echo "Description: ";
 		$new["description"] = read();
 		$task->addChild("title", $new["title"]);

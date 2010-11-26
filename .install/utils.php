@@ -97,76 +97,79 @@ class Colors {
 }
 $colors = new Colors;
 
+
+
 function print_tasks($tasks) {
+	global $theme;
 	$COLS = (int)shell_exec("tput cols");
 	$colors = new Colors;
 	if ($tasks != null) {
-		echo $colors->getColoredString(str_repeat("=", $COLS), "blue", "cyan");
+		echo $colors->getColoredString(str_repeat("=", $COLS), $theme["task divider"]["foreground"], $theme["task divider"]["background"]);
 		$id = 1;
 		foreach ($tasks as $task) {
 			$date = preg_replace("/(\d{4})(\d{2})(\d{2})/", "$2/$3/$1", $task->due);
-			$tags = preg_replace("/\s?+\,\s?+/", $colors->getColoredString(" | ", "blue"), $task->tags);
+			$tags = preg_replace("/\s?+\,\s?+/", " " . $colors->getColoredString("|", $theme["tags divider"]["foreground"], $theme["tags divider"]["background"]) . " ", $task->tags);
 			$title = $task->title;
 			$pad = 3 - strlen((string)$id);
-			echo str_repeat(" ", $pad) . $id . ": ";
-			echo $colors->getColoredString("\033[1m$task->title\033[22m", "green");
+			echo str_repeat(" ", $pad) . $colors->getColoredString($id, $theme["id"]["foreground"], $theme["id"]["background"]) . ": ";
+			echo $colors->getColoredString("\033[1m$task->title\033[22m", $theme["title"]["foreground"], $theme["title"]["background"]);
 			$space = $COLS - strlen($title) - strlen($date) - 5;
 			echo str_repeat(" ", $space);
-			echo $colors->getColoredString("\033[3m$date\033[24m", "green");
-			echo $colors->getColoredString(str_repeat("-", $COLS), "green");
+			echo $colors->getColoredString("\033[3m$date\033[24m", $theme["date"]["foreground"], $theme["date"]["background"]);
+			echo $colors->getColoredString(str_repeat("-", $COLS), $theme["header rule"]["foreground"], $theme["header rule"]["background"]);
 			writeln($tags);
 			echo "\n";
 			writeln(trim($task->description));
-			echo $colors->getColoredString(str_repeat("=", $COLS), "blue", "cyan");
+			echo $colors->getColoredString(str_repeat("=", $COLS), $theme["task divider"]["foreground"], $theme["task divider"]["background"]);
 			$id++;
 		}
 	}
 }
 
-$options  = $colors->getColoredString("\033[1mA\033[22m", "green");
+$options  = $colors->getColoredString("\033[1mA\033[22m", $theme["toolbar command"]["foreground"], $theme["toolbar command"]["background"]);
 $options .= "ll ";
-$options .= $colors->getColoredString("|", "blue", "cyan");
+$options .= $colors->getColoredString("|", $theme["toolbar divider"]["foreground"], $theme["toolbar divider"]["background"]);
 $options .= " ";
-$options .= $colors->getColoredString("\033[1mT\033[22m", "green");
+$options .= $colors->getColoredString("\033[1mT\033[22m", $theme["toolbar command"]["foreground"], $theme["toolbar command"]["background"]);
 $options .= "itle ";
-$options .= $colors->getColoredString("|", "blue", "cyan");
+$options .= $colors->getColoredString("|", $theme["toolbar divider"]["foreground"], $theme["toolbar divider"]["background"]);
 $options .= " Tags (";
-$options .= $colors->getColoredString("\033[1mO\033[22m", "green");
+$options .= $colors->getColoredString("\033[1mO\033[22m", $theme["toolbar command"]["foreground"], $theme["toolbar command"]["background"]);
 $options .= "R) ";
-$options .= $colors->getColoredString("|", "blue", "cyan");
+$options .= $colors->getColoredString("|", $theme["toolbar divider"]["foreground"], $theme["toolbar divider"]["background"]);
 $options .= " Tags (AND) ";
-$options .= $colors->getColoredString("\033[1m&\033[22m", "green");
+$options .= $colors->getColoredString("\033[1m&\033[22m", $theme["toolbar command"]["foreground"], $theme["toolbar command"]["background"]);
 $options .= " ";
-$options .= $colors->getColoredString("|", "blue", "cyan");
+$options .= $colors->getColoredString("|", $theme["toolbar divider"]["foreground"], $theme["toolbar divider"]["background"]);
 $options .= " ";
-$options .= $colors->getColoredString("\033[1mD\033[22m", "green");
+$options .= $colors->getColoredString("\033[1mD\033[22m", $theme["toolbar command"]["foreground"], $theme["toolbar command"]["background"]);
 $options .= "ate ";
-$options .= $colors->getColoredString("|", "blue", "cyan");
+$options .= $colors->getColoredString("|", $theme["toolbar divider"]["foreground"], $theme["toolbar divider"]["background"]);
 $options .= " ";
-$options .= $colors->getColoredString("\033[1mS\033[22m", "green");
+$options .= $colors->getColoredString("\033[1mS\033[22m", $theme["toolbar command"]["foreground"], $theme["toolbar command"]["background"]);
 $options .= "elect ";
-$options .= $colors->getColoredString("|", "blue", "cyan");
+$options .= $colors->getColoredString("|", $theme["toolbar divider"]["foreground"], $theme["toolbar divider"]["background"]);
 $options .= " ";
-$options .= $colors->getColoredString("\033[1mN\033[22m", "green");
+$options .= $colors->getColoredString("\033[1mN\033[22m", $theme["toolbar command"]["foreground"], $theme["toolbar command"]["background"]);
 $options .= "ew ";
-$options .= $colors->getColoredString("|", "blue", "cyan");
+$options .= $colors->getColoredString("|", $theme["toolbar divider"]["foreground"], $theme["toolbar divider"]["background"]);
 $options .= " ";
-$options .= $colors->getColoredString("\033[1mE\033[22m", "green");
+$options .= $colors->getColoredString("\033[1mE\033[22m", $theme["toolbar command"]["foreground"], $theme["toolbar command"]["background"]);
 $options .= "dit ";
-$options .= $colors->getColoredString("|", "blue", "cyan");
+$options .= $colors->getColoredString("|", $theme["toolbar divider"]["foreground"], $theme["toolbar divider"]["background"]);
 $options .= " Delete (";
-$options .= $colors->getColoredString("\033[1m-\033[22m", "green");
+$options .= $colors->getColoredString("\033[1m-\033[22m", $theme["toolbar command"]["foreground"], $theme["toolbar command"]["background"]);
 $options .= ") ";
-$options .= $colors->getColoredString("|", "blue", "cyan");
+$options .= $colors->getColoredString("|", $theme["toolbar divider"]["foreground"], $theme["toolbar divider"]["background"]);
 $options .= " ";
-$options .= $colors->getColoredString("\033[1mP\033[22m", "green");
+$options .= $colors->getColoredString("\033[1mP\033[22m", $theme["toolbar command"]["foreground"], $theme["toolbar command"]["background"]);
 $options .= "references ";
-$options .= $colors->getColoredString("|", "blue", "cyan");
+$options .= $colors->getColoredString("|", $theme["toolbar divider"]["foreground"], $theme["toolbar divider"]["background"]);
 $options .= " ";
-$options .= $colors->getColoredString("\033[1mB\033[22m", "green");
+$options .= $colors->getColoredString("\033[1mB\033[22m", $theme["toolbar command"]["foreground"], $theme["toolbar command"]["background"]);
 $options .= "ookmarks ";
-$options .= $colors->getColoredString("|", "blue", "cyan");
+$options .= $colors->getColoredString("|", $theme["toolbar divider"]["foreground"], $theme["toolbar divider"]["background"]);
 $options .= " ";
-$options .= $colors->getColoredString("\033[1mQ\033[22m", "green");
+$options .= $colors->getColoredString("\033[1mQ\033[22m", $theme["toolbar command"]["foreground"], $theme["toolbar command"]["background"]);
 $options .= "uit ";
 define(OPTIONS, $options);

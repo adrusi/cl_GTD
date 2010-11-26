@@ -63,6 +63,14 @@ if ($users == "current") {
 	fwrite($utils, $content);
 	fclose($utils);
 	
+	echo "    Coping theme file...\n";
+	$utils = fopen(".install/theme.php", "r");
+	$content = fread($utils, 99999);
+	fclose($utils);
+	$utils = fopen("$HOME/.cl_GTD/theme.php", "w+");
+	fwrite($utils, $content);
+	fclose($utils);
+	
 	echo "    Copying tasks database...\n";
 	$db = fopen(".install/db.xml", "r");
 	$content = fread($db, 99999);
