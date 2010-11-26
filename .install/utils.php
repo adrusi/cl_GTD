@@ -111,7 +111,7 @@ function print_tasks($tasks) {
 			$tags = preg_replace("/\s?+\,\s?+/", " " . $colors->getColoredString("|", $theme["tags divider"]["foreground"], $theme["tags divider"]["background"]) . " ", $task->tags);
 			$title = $task->title;
 			$pad = 3 - strlen((string)$id);
-			echo str_repeat(" ", $pad) . $colors->getColoredString($id, $theme["id"]["foreground"], $theme["id"]["background"]) . ": ";
+			echo str_repeat(" ", $pad) . $colors->getColoredString("$id: ", $theme["id"]["foreground"], $theme["id"]["background"]);
 			echo $colors->getColoredString("\033[1m$task->title\033[22m", $theme["title"]["foreground"], $theme["title"]["background"]);
 			$space = $COLS - strlen($title) - strlen($date) - 5;
 			echo str_repeat(" ", $space);

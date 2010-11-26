@@ -400,7 +400,8 @@ class GTD {
 		system("clear");
 		writeln("Select a preference to edit");
 		writeln("\033[1m1)\033[0m Startup");
-		writeln("\033[1m2)\033[0m Upgrade database");
+		writeln("\033[1m2)\033[0m Themes");
+		writeln("\033[1m3)\033[0m Upgrade database");
 		$choice = get_char();
 		if ($choice == "1") {
 			system("clear");
@@ -414,6 +415,30 @@ class GTD {
 			fclose($xml);
 		}
 		elseif ($choice == "2") {
+			global $themes;
+			$themes_list = $themes;
+			$id = 1;
+			foreach ($themes_list as $s_theme) {
+				writeln("\033[1m$id)\033[0m $s_theme");
+				$id++;
+			}
+			echo "Choose a theme: ";
+			$input = read();
+			$this->db->prefs->theme = $themes_list[$input - 1];
+			$xml = fopen(DATABASE, "w+");
+			fwrite($xml, $this->db->asXML());
+			fclose($xml);
+			echo "You must restart cl_GTD for change to take place. Restart now? (y or n).";
+			$restart = get_char();
+			if ($restart = "y") {
+				$this->continue = FALSE;
+			}
+			else {
+				system("clear");
+				print_tasks($this->tasks);
+			}
+		}
+		elseif ($choice == "3") {
 			writeln("Attempting to non-destructively upgrade the database...");
 			if (!$this->db->prefs) {
 				$this->db->addChild("prefs")->addChild("startup", "a");

@@ -38,6 +38,9 @@ if ($users == "current") {
 	echo "Creating install directory...\n";
 	shell_exec("mkdir $HOME/.cl_GTD");
 	
+	echo "Creating themes directory...\n";
+	shell_exec("mkdir $HOME/.cl_GTD/themes");
+	
 	echo "Copying main files:\n";
 	echo "    Copying executable file...\n";
 	$gtd = fopen(".install/gtd.php", "r");
